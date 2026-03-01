@@ -3,19 +3,19 @@
 
 > B.Tech Second Year Project | GLA University, Mathura  
 > Department of Computer Engineering & Applications  
-> Supervisor: Dr. Sayantan Sinha | Batch 2025–26
+> Supervisor: Dr. Sayantan Sinha | Batch 2024–28
 
 ---
 
 ## 📌 Team Members
 
-| Name            | Roll No.    |
-|-----------------|-------------|
-| Nitin Kumar     | 2415001055  |
-| Ayush Agrawal   | 2415000394  |
-| Shinjinee Dheer | 2415001479  |
-| Saurabh Singh   | 2415001449  |
-| Vishesh Pandey  | 2415001795  |
+| Name            |
+|-----------------|
+| Nitin Kumar     |
+| Ayush Agrawal   |
+| Shinjinee Dheer |
+| Saurabh Singh   |
+| Vishesh Pandey  |
 
 ---
 
