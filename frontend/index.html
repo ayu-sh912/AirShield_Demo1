@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AirShield – Breathe Smarter</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #050a0e;
+    --cyan: #00f5ff;
+    --green: #00ff88;
+    --dim: #0a1520;
+    --border: rgba(0,245,255,0.15);
+    --text: #b0c8d4;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font-family:'Rajdhani',sans-serif; overflow-x:hidden; }
+
+  /* NAV */
+  nav {
+    position:fixed; top:0; left:0; right:0; z-index:100;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:16px 40px;
+    border-bottom:1px solid var(--border);
+    background:rgba(5,10,14,0.85);
+    backdrop-filter:blur(12px);
+  }
+  .logo { display:flex; align-items:center; gap:10px; font-family:'Orbitron',sans-serif; font-weight:700; font-size:1.1rem; color:#fff; }
+  .logo-icon { width:28px; height:28px; background:linear-gradient(135deg,var(--cyan),var(--green)); border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:14px; }
+  nav ul { display:flex; gap:32px; list-style:none; }
+  nav ul a { color:var(--text); text-decoration:none; font-size:0.9rem; letter-spacing:1px; text-transform:uppercase; transition:color 0.2s; }
+  nav ul a:hover { color:var(--cyan); }
+  .nav-login { border:1px solid var(--cyan); color:var(--cyan); padding:8px 20px; border-radius:4px; font-family:'Orbitron',sans-serif; font-size:0.75rem; letter-spacing:2px; cursor:pointer; background:transparent; transition:all 0.2s; }
+  .nav-login:hover { background:rgba(0,245,255,0.1); }
+
+  /* HERO */
+  .hero {
+    min-height:100vh; display:flex; align-items:center; justify-content:center;
+    position:relative; overflow:hidden; padding-top:80px;
+  }
+  .globe-wrap {
+    position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+    width:520px; height:520px;
+  }
+  .globe {
+    width:100%; height:100%;
+    border-radius:50%;
+    border:1px solid rgba(0,245,255,0.2);
+    position:relative;
+    animation:globeSpin 20s linear infinite;
+  }
+  .globe::before, .globe::after {
+    content:''; position:absolute; top:50%; left:0; right:0; height:1px;
+    background:rgba(0,245,255,0.15);
+    transform:translateY(-50%);
+  }
+  .globe::after { top:30%; }
+  .globe-line {
+    position:absolute; width:100%; height:100%;
+    border-radius:50%;
+    border:1px solid rgba(0,245,255,0.08);
+    transform:rotateY(60deg);
+  }
+  .globe-line:nth-child(2) { transform:rotateY(120deg); }
+  .globe-line:nth-child(3) { transform:rotateX(60deg); }
+  .globe-line:nth-child(4) { transform:rotateX(120deg); }
+  .globe-glow {
+    position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+    width:300px; height:300px; border-radius:50%;
+    background:radial-gradient(circle, rgba(0,245,255,0.12) 0%, transparent 70%);
+    animation:pulse 3s ease-in-out infinite;
+  }
+
+  @keyframes globeSpin { from{transform:rotateY(0deg)} to{transform:rotateY(360deg)} }
+  @keyframes pulse { 0%,100%{opacity:0.5;transform:translate(-50%,-50%) scale(1)} 50%{opacity:1;transform:translate(-50%,-50%) scale(1.15)} }
+
+  .hero-content { position:relative; z-index:10; text-align:center; }
+  .hero-title {
+    font-family:'Orbitron',sans-serif; font-weight:900;
+    font-size:5.5rem; line-height:1;
+    color:#fff;
+    text-shadow:0 0 40px rgba(0,245,255,0.5), 0 0 80px rgba(0,245,255,0.2);
+    letter-spacing:4px;
+    animation:fadeUp 1s ease both;
+  }
+  .hero-sub {
+    margin:20px auto 0; max-width:480px;
+    font-size:1rem; color:rgba(176,200,212,0.7); line-height:1.6;
+    animation:fadeUp 1s ease 0.2s both;
+  }
+  .cta-btn {
+    display:inline-block; margin-top:36px;
+    padding:14px 44px;
+    border:1px solid var(--cyan);
+    color:#000; background:var(--cyan);
+    font-family:'Orbitron',sans-serif; font-size:0.85rem; letter-spacing:3px; text-transform:uppercase;
+    cursor:pointer; border-radius:4px;
+    box-shadow:0 0 30px rgba(0,245,255,0.4);
+    transition:all 0.3s;
+    text-decoration:none;
+    animation:fadeUp 1s ease 0.4s both;
+  }
+  .cta-btn:hover { background:transparent; color:var(--cyan); box-shadow:0 0 50px rgba(0,245,255,0.6); }
+  .live-bar {
+    margin-top:24px; font-size:0.75rem; letter-spacing:2px; color:var(--green);
+    animation:fadeUp 1s ease 0.6s both;
+  }
+  .live-dot { display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--green); margin-right:8px; animation:blink 1.5s ease-in-out infinite; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  @keyframes fadeUp { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)} }
+
+  /* STATS BAR */
+  .stats-bar {
+    position:absolute; bottom:0; left:0; right:0;
+    display:flex; justify-content:center; gap:60px;
+    padding:20px 40px;
+    border-top:1px solid var(--border);
+    background:rgba(5,10,14,0.8);
+  }
+  .stat { text-align:center; }
+  .stat-num { font-family:'Orbitron',sans-serif; font-size:1.4rem; color:var(--cyan); }
+  .stat-label { font-size:0.7rem; letter-spacing:2px; color:rgba(176,200,212,0.5); text-transform:uppercase; margin-top:2px; }
+
+  /* FEATURES */
+  .features { padding:100px 40px; max-width:1100px; margin:0 auto; }
+  .features-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:24px; margin-top:60px; }
+  .feat-card {
+    background:var(--dim); border:1px solid var(--border);
+    padding:32px 28px; border-radius:8px;
+    position:relative; overflow:hidden;
+    transition:border-color 0.3s, transform 0.3s;
+  }
+  .feat-card:hover { border-color:rgba(0,245,255,0.4); transform:translateY(-4px); }
+  .feat-card::before {
+    content:''; position:absolute; top:0; left:0; right:0; height:2px;
+    background:linear-gradient(90deg, var(--cyan), var(--green));
+    opacity:0; transition:opacity 0.3s;
+  }
+  .feat-card:hover::before { opacity:1; }
+  .feat-icon { font-size:2rem; margin-bottom:16px; }
+  .feat-title { font-family:'Orbitron',sans-serif; font-size:0.85rem; color:#fff; letter-spacing:2px; text-transform:uppercase; margin-bottom:12px; }
+  .feat-desc { font-size:0.9rem; color:rgba(176,200,212,0.65); line-height:1.6; }
+
+  /* FOOTER */
+  footer {
+    border-top:1px solid var(--border); padding:24px 40px;
+    display:flex; justify-content:space-between; align-items:center;
+    font-size:0.75rem; color:rgba(176,200,212,0.4); letter-spacing:1px;
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">
+    <div class="logo-icon">⬡</div>
+    AIRSHIELD
+  </div>
+  <ul>
+    <li><a href="#">Technology</a></li>
+    <li><a href="dashboard.html">Network</a></li>
+    <li><a href="#">Global Contact</a></li>
+  </ul>
+  <button class="nav-login">LOGIN</button>
+</nav>
+
+<section class="hero">
+  <div class="globe-wrap">
+    <div class="globe">
+      <div class="globe-line"></div>
+      <div class="globe-line"></div>
+      <div class="globe-line"></div>
+      <div class="globe-line"></div>
+    </div>
+    <div class="globe-glow"></div>
+  </div>
+
+  <div class="hero-content">
+    <h1 class="hero-title">BREATHE<br>SMARTER</h1>
+    <p class="hero-sub">Hyper-precision environmental monitoring powered by a global decentralized sensor network. Real-time air quality intelligence at your fingertips.</p>
+    <a href="dashboard.html" class="cta-btn">GET STARTED</a>
+    <div class="live-bar"><span class="live-dot"></span>LIVE NETWORK STATUS: OPERATIONAL</div>
+  </div>
+
+  <div class="stats-bar">
+    <div class="stat"><div class="stat-num">14,283</div><div class="stat-label">Active Nodes</div></div>
+    <div class="stat"><div class="stat-num">1.2 B</div><div class="stat-label">Readings/Day</div></div>
+    <div class="stat"><div class="stat-num">99.998%</div><div class="stat-label">Uptime</div></div>
+  </div>
+</section>
+
+<section class="features">
+  <div class="features-grid">
+    <div class="feat-card">
+      <div class="feat-icon">◈</div>
+      <div class="feat-title">Quantum Nodes</div>
+      <p class="feat-desc">Hyper-miniaturized sensor nodes capable of detecting particles down to 0.1 microns with sub-second latency.</p>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">◉</div>
+      <div class="feat-title">AI Analytics</div>
+      <p class="feat-desc">Predictive analytics in clustering using neural networks to forecast pollution trends 48 hours in advance.</p>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">⬡</div>
+      <div class="feat-title">Immutable Data</div>
+      <p class="feat-desc">All environmental data secured on a private ledger, ensuring maximum integrity and audit-ready compliance.</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <span>© 2025 AirShield — GLA University, Mathura</span>
+  <span>AIRSHIELD v2.4.0 · SECURE · MONITORED</span>
+</footer>
+
+</body>
+</html>

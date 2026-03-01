@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AirShield – Node-742X</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+  :root { --bg:#050a0e; --panel:#0a1520; --border:rgba(0,245,255,0.12); --cyan:#00f5ff; --green:#00ff88; --yellow:#ffc107; --red:#ff4757; --text:#b0c8d4; --dim:#061018; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font-family:'Rajdhani',sans-serif; display:flex; flex-direction:column; height:100vh; overflow:hidden; }
+
+  /* TOP BAR */
+  .topbar { display:flex; align-items:center; gap:12px; padding:10px 20px; border-bottom:1px solid var(--border); background:rgba(5,10,14,0.95); flex-shrink:0; }
+  .logo { font-family:'Orbitron',sans-serif; font-weight:700; font-size:0.85rem; color:#fff; display:flex; align-items:center; gap:8px; }
+  .logo-box { width:22px; height:22px; background:linear-gradient(135deg,var(--cyan),var(--green)); border-radius:4px; }
+  .status-badge { padding:3px 10px; border-radius:3px; font-size:0.65rem; letter-spacing:1px; font-family:'Orbitron',sans-serif; background:rgba(0,255,136,0.15); border:1px solid rgba(0,255,136,0.4); color:var(--green); }
+  .search { flex:1; max-width:340px; margin:0 auto; background:rgba(0,245,255,0.04); border:1px solid var(--border); border-radius:4px; padding:6px 14px; color:var(--text); font-family:'Rajdhani',sans-serif; font-size:0.85rem; outline:none; }
+  .topbar-right { display:flex; align-items:center; gap:14px; margin-left:auto; }
+  .icon-btn { background:none; border:none; color:var(--text); cursor:pointer; font-size:1rem; padding:4px; }
+  .user-chip { display:flex; align-items:center; gap:8px; font-size:0.8rem; }
+  .avatar { width:28px; height:28px; border-radius:50%; background:linear-gradient(135deg,var(--cyan),var(--green)); display:flex; align-items:center; justify-content:center; font-size:0.7rem; font-weight:700; color:#000; }
+
+  /* LAYOUT */
+  .main { display:flex; flex:1; overflow:hidden; }
+
+  /* NODE LIST SIDEBAR */
+  .node-sidebar { width:190px; border-right:1px solid var(--border); background:var(--dim); overflow-y:auto; flex-shrink:0; padding:10px 0; }
+  .ns-section { font-size:0.6rem; letter-spacing:2px; color:rgba(176,200,212,0.3); text-transform:uppercase; padding:8px 14px 4px; }
+  .node-item { padding:10px 14px; cursor:pointer; border-left:2px solid transparent; transition:all 0.2s; }
+  .node-item:hover, .node-item.active { background:rgba(0,245,255,0.06); border-left-color:var(--cyan); }
+  .ni-id { font-family:'Orbitron',sans-serif; font-size:0.75rem; color:#fff; }
+  .ni-loc { font-size:0.7rem; color:rgba(176,200,212,0.45); margin-top:2px; }
+  .ni-status { font-size:0.6rem; margin-top:4px; display:flex; align-items:center; gap:5px; }
+  .ni-dot { width:6px; height:6px; border-radius:50%; }
+  .nd-live { background:var(--green); animation:blink 1.5s infinite; }
+  .nd-warn { background:var(--yellow); }
+  .nd-off  { background:rgba(176,200,212,0.3); }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+  /* CENTER */
+  .center { flex:1; overflow-y:auto; padding:20px 24px; }
+
+  /* NODE HERO */
+  .node-hero { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:20px; }
+  .nh-left { }
+  .active-badge { display:inline-flex; align-items:center; gap:6px; background:rgba(0,255,136,0.15); border:1px solid rgba(0,255,136,0.4); color:var(--green); padding:3px 10px; border-radius:3px; font-size:0.65rem; letter-spacing:1px; margin-bottom:8px; font-family:'Orbitron',sans-serif; }
+  .node-name { font-family:'Orbitron',sans-serif; font-size:2.8rem; font-weight:900; color:#fff; line-height:1.1; text-shadow:0 0 30px rgba(0,245,255,0.3); }
+  .node-meta { display:flex; gap:24px; margin-top:12px; }
+  .nm-item { }
+  .nm-key { font-size:0.6rem; letter-spacing:2px; color:rgba(176,200,212,0.35); text-transform:uppercase; }
+  .nm-val { font-family:'Orbitron',sans-serif; font-size:0.9rem; color:#fff; margin-top:2px; }
+  .calibrate-btn { padding:8px 20px; border:1px solid var(--cyan); background:transparent; color:var(--cyan); font-family:'Orbitron',sans-serif; font-size:0.7rem; letter-spacing:2px; cursor:pointer; border-radius:4px; transition:all 0.2s; }
+  .calibrate-btn:hover { background:rgba(0,245,255,0.1); box-shadow:0 0 20px rgba(0,245,255,0.3); }
+
+  /* METRICS ROW */
+  .metrics-row { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:20px; }
+  .metric-card { background:var(--panel); border:1px solid var(--border); border-radius:6px; padding:14px; position:relative; }
+  .mc-label { font-size:0.6rem; letter-spacing:2px; color:rgba(176,200,212,0.35); text-transform:uppercase; margin-bottom:8px; }
+  .mc-val { font-family:'Orbitron',sans-serif; font-size:1.3rem; color:#fff; }
+  .mc-unit { font-size:0.65rem; color:rgba(176,200,212,0.4); }
+  .mc-sub { font-size:0.7rem; color:rgba(176,200,212,0.45); margin-top:4px; }
+
+  /* GAUGES ROW */
+  .gauges-row { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:20px; }
+  .gauge-card { background:var(--panel); border:1px solid var(--border); border-radius:8px; padding:20px; text-align:center; }
+  .gc-title { font-size:0.6rem; letter-spacing:2px; text-transform:uppercase; color:rgba(176,200,212,0.35); margin-bottom:16px; }
+  .gauge-wrap { position:relative; width:120px; height:120px; margin:0 auto; }
+  .gauge-wrap canvas { width:120px; height:120px; }
+  .gauge-center { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+  .gc-num { font-family:'Orbitron',sans-serif; font-size:1.8rem; font-weight:900; color:#fff; }
+  .gc-status { font-size:0.65rem; letter-spacing:1px; color:var(--green); margin-top:2px; font-family:'Orbitron',sans-serif; }
+
+  /* TECH OVERVIEW */
+  .tech-overview { background:var(--panel); border:1px solid var(--border); border-radius:8px; padding:20px; margin-bottom:20px; }
+  .to-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:14px; }
+  .to-item { }
+  .to-key { font-size:0.65rem; letter-spacing:1px; color:rgba(176,200,212,0.35); text-transform:uppercase; margin-bottom:4px; }
+  .to-val { font-size:0.85rem; color:#fff; }
+  .to-badge { display:inline-flex; align-items:center; gap:5px; padding:2px 8px; border-radius:3px; font-size:0.65rem; font-family:'Orbitron',sans-serif; }
+  .tb-stable { background:rgba(0,255,136,0.15); color:var(--green); border:1px solid rgba(0,255,136,0.3); }
+  .tb-warn   { background:rgba(255,193,7,0.15);  color:var(--yellow); border:1px solid rgba(255,193,7,0.3); }
+
+  /* HEALTH BARS */
+  .health-section { background:var(--panel); border:1px solid var(--border); border-radius:8px; padding:20px; margin-bottom:20px; }
+  .health-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:14px; }
+  .hb-item { }
+  .hb-top { display:flex; justify-content:space-between; margin-bottom:5px; font-size:0.75rem; }
+  .hb-label { color:rgba(176,200,212,0.55); }
+  .hb-val { color:#fff; font-family:'Orbitron',sans-serif; font-size:0.7rem; }
+  .hb-track { height:6px; background:rgba(0,245,255,0.08); border-radius:3px; overflow:hidden; }
+  .hb-fill { height:100%; border-radius:3px; transition:width 1s ease; }
+
+  /* CHART */
+  .chart-section { background:var(--panel); border:1px solid var(--border); border-radius:8px; padding:20px; }
+  .chart-wrap { height:140px; margin-top:12px; }
+
+  /* RESET BTN */
+  .reset-btn { width:100%; margin-top:12px; padding:8px; border:1px solid rgba(255,71,87,0.4); background:rgba(255,71,87,0.1); color:var(--red); font-family:'Orbitron',sans-serif; font-size:0.65rem; letter-spacing:2px; cursor:pointer; border-radius:4px; transition:all 0.2s; }
+  .reset-btn:hover { background:rgba(255,71,87,0.2); }
+
+  /* RIGHT DETAILS PANEL */
+  .right-detail { width:240px; border-left:1px solid var(--border); overflow-y:auto; flex-shrink:0; padding:16px; }
+  .rd-section { margin-bottom:20px; }
+  .rd-title { font-family:'Orbitron',sans-serif; font-size:0.65rem; color:rgba(176,200,212,0.35); letter-spacing:2px; text-transform:uppercase; margin-bottom:10px; }
+  .rd-val-big { font-family:'Orbitron',sans-serif; font-size:1.5rem; color:#fff; }
+  .rd-sub { font-size:0.7rem; color:rgba(176,200,212,0.4); margin-top:3px; }
+  .rd-row { display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid rgba(0,245,255,0.06); font-size:0.75rem; }
+  .rd-key { color:rgba(176,200,212,0.45); }
+  .rd-item-val { color:#fff; font-family:'Orbitron',sans-serif; font-size:0.7rem; }
+  .sensitivity-bar { margin-top:4px; }
+  .sens-track { height:4px; background:rgba(0,245,255,0.08); border-radius:2px; overflow:hidden; margin-top:3px; }
+  .sens-fill { height:100%; border-radius:2px; }
+  .sens-label { font-size:0.65rem; display:flex; justify-content:space-between; color:rgba(176,200,212,0.35); margin-top:2px; }
+
+  /* BOTTOM BAR */
+  .bottom-bar { display:flex; align-items:center; gap:32px; padding:8px 20px; border-top:1px solid var(--border); background:rgba(5,10,14,0.95); font-size:0.7rem; flex-shrink:0; }
+  .bs-item { display:flex; align-items:center; gap:8px; }
+  .bs-key { color:rgba(176,200,212,0.35); text-transform:uppercase; letter-spacing:1px; }
+  .bs-val { color:var(--cyan); font-family:'Orbitron',sans-serif; font-size:0.7rem; }
+  .admin-chip { display:flex; align-items:center; gap:8px; margin-left:auto; }
+  .admin-avatar { width:28px; height:28px; border-radius:50%; background:rgba(0,245,255,0.1); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:0.65rem; }
+
+  ::-webkit-scrollbar { width:4px; }
+  ::-webkit-scrollbar-track { background:transparent; }
+  ::-webkit-scrollbar-thumb { background:rgba(0,245,255,0.2); border-radius:2px; }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="logo"><div class="logo-box"></div>AIRSHIELD</div>
+  <div class="status-badge">ALL — SAFE</div>
+  <input class="search" placeholder="Search Micro-Sectors, Stations or Detectors..." />
+  <div class="topbar-right">
+    <button class="icon-btn">🔔</button>
+    <button class="icon-btn">⚙</button>
+    <div class="user-chip">
+      <span style="font-size:0.75rem">Dr. Elena Ross</span>
+      <div class="avatar">ER</div>
+    </div>
+  </div>
+</div>
+
+<div class="main">
+  <!-- NODE LIST -->
+  <div class="node-sidebar">
+    <div class="ns-section">Active Nodes</div>
+    <div class="node-item active">
+      <div class="ni-id">Node-742X</div>
+      <div class="ni-loc">Main Terminal</div>
+      <div class="ni-status"><span class="ni-dot nd-live"></span>Live · Safe</div>
+    </div>
+    <div class="node-item">
+      <div class="ni-id">Node-D71K</div>
+      <div class="ni-loc">North Sector</div>
+      <div class="ni-status"><span class="ni-dot nd-live"></span>Live · Safe</div>
+    </div>
+    <div class="node-item">
+      <div class="ni-id">Node-339M</div>
+      <div class="ni-loc">Old Entrance Route</div>
+      <div class="ni-status"><span class="ni-dot nd-warn"></span>Moderate</div>
+    </div>
+    <div class="node-item">
+      <div class="ni-id">Node-205A</div>
+      <div class="ni-loc">Quarter Station South</div>
+      <div class="ni-status"><span class="ni-dot nd-live"></span>Live · Safe</div>
+    </div>
+    <div class="node-item">
+      <div class="ni-id">Node-018</div>
+      <div class="ni-loc">Disconnected</div>
+      <div class="ni-status"><span class="ni-dot nd-off"></span>Offline</div>
+    </div>
+  </div>
+
+  <!-- CENTER CONTENT -->
+  <div class="center">
+    <!-- NODE HERO -->
+    <div class="node-hero">
+      <div class="nh-left">
+        <div class="active-badge"><span class="ni-dot nd-live" style="width:7px;height:7px"></span>ACTIVE · LIVE</div>
+        <div class="node-name">NODE-<br>742X</div>
+        <div class="node-meta">
+          <div class="nm-item"><div class="nm-key">Total Uptime</div><div class="nm-val">14d 06h 12m</div></div>
+          <div class="nm-item"><div class="nm-key">Last Data</div><div class="nm-val">02m 44s ago</div></div>
+        </div>
+      </div>
+      <button class="calibrate-btn">CALIBRATE</button>
+    </div>
+
+    <!-- METRICS -->
+    <div class="metrics-row">
+      <div class="metric-card">
+        <div class="mc-label">Min PM2.5</div>
+        <div class="mc-val">8.2 <span class="mc-unit">μg/m³</span></div>
+        <div class="mc-sub">Last 24 hrs</div>
+      </div>
+      <div class="metric-card">
+        <div class="mc-label">Median</div>
+        <div class="mc-val">14.1 <span class="mc-unit">μg/m³</span></div>
+        <div class="mc-sub">Last 24 hrs</div>
+      </div>
+      <div class="metric-card">
+        <div class="mc-label">Max PM2.5</div>
+        <div class="mc-val">26.8 <span class="mc-unit">μg/m³</span></div>
+        <div class="mc-sub">Last 24 hrs</div>
+      </div>
+      <div class="metric-card">
+        <div class="mc-label">WHO Limit</div>
+        <div class="mc-val" style="color:var(--yellow)">WHO-5 <span class="mc-unit">μg/m³</span></div>
+        <div class="mc-sub" style="color:rgba(255,193,7,0.6)">Guideline 2021</div>
+      </div>
+    </div>
+
+    <!-- GAUGES -->
+    <div class="gauges-row">
+      <div class="gauge-card">
+        <div class="gc-title">PM2.5 Real-Time Concentration</div>
+        <div class="gauge-wrap">
+          <canvas id="pm25Gauge" width="120" height="120"></canvas>
+          <div class="gauge-center">
+            <div class="gc-num">12.5</div>
+            <div class="gc-status">EXCELLENT</div>
+          </div>
+        </div>
+      </div>
+      <div class="gauge-card">
+        <div class="gc-title">Device Health Score</div>
+        <div class="gauge-wrap">
+          <canvas id="healthGauge" width="120" height="120"></canvas>
+          <div class="gauge-center">
+            <div class="gc-num" style="color:var(--cyan)">98%</div>
+            <div class="gc-status" style="color:var(--cyan)">OPTIMAL</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TECH OVERVIEW -->
+    <div class="tech-overview">
+      <div class="section-title" style="font-family:'Orbitron',sans-serif;font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;color:#fff;">Technical Overview</div>
+      <div class="to-grid">
+        <div class="to-item"><div class="to-key">On-Device Data</div><div class="to-val">Oct 10, 2023 (10:02 GMT)</div></div>
+        <div class="to-item"><div class="to-key">All Systems</div><div class="to-val"><span class="to-badge tb-stable">All systems operating within optimal theoretical parameters.</span></div></div>
+        <div class="to-item"><div class="to-key">Firmware</div><div class="to-val">v2.4.0 stable <span style="color:var(--green);font-size:0.65rem">✓ FW</span></div></div>
+        <div class="to-item"><div class="to-key">Hardware Revision</div><div class="to-val">Rev D / Build 682</div></div>
+        <div class="to-item"><div class="to-key">GPS Location</div><div class="to-val">48.7128° N · 74.0060° W</div></div>
+        <div class="to-item"><div class="to-key">Sensor Density</div><div class="to-val">Normal</div></div>
+        <div class="to-item"><div class="to-key">API Gateway</div><div class="to-val"><span class="to-badge tb-stable">api.v2 ✓ ACTIVE</span></div></div>
+        <div class="to-item"><div class="to-key">WiFi Bouncer</div><div class="to-val">NODE-B</div></div>
+      </div>
+      <button class="reset-btn">⚠ SYSTEM FACTORY RESET</button>
+    </div>
+
+    <!-- 7 DAY CHART -->
+    <div class="chart-section">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div style="font-family:'Orbitron',sans-serif;font-size:0.7rem;color:#fff;letter-spacing:1px;text-transform:uppercase;">7-Day Pollutant Analytics</div>
+        <div style="display:flex;gap:8px">
+          <button style="padding:3px 10px;border:1px solid var(--cyan);background:rgba(0,245,255,0.1);color:var(--cyan);font-size:0.65rem;border-radius:3px;cursor:pointer;font-family:'Orbitron',sans-serif">PM2.5</button>
+          <button style="padding:3px 10px;border:1px solid var(--border);background:transparent;color:var(--text);font-size:0.65rem;border-radius:3px;cursor:pointer;">PM10</button>
+          <button style="padding:3px 10px;border:1px solid var(--border);background:transparent;color:var(--text);font-size:0.65rem;border-radius:3px;cursor:pointer;">NO2</button>
+        </div>
+      </div>
+      <div class="chart-wrap"><canvas id="weekChart"></canvas></div>
+    </div>
+  </div>
+
+  <!-- RIGHT DETAIL PANEL -->
+  <div class="right-detail">
+    <!-- Battery -->
+    <div class="rd-section">
+      <div class="rd-title">Battery Cell</div>
+      <div style="height:80px;display:flex;align-items:center;justify-content:center">
+        <div style="text-align:center">
+          <div class="rd-val-big" style="color:var(--green);font-size:2rem">85%</div>
+          <div class="rd-sub">Fully Available</div>
+        </div>
+      </div>
+      <div class="hb-track" style="margin-top:8px"><div class="hb-fill" style="width:85%;background:var(--green)"></div></div>
+    </div>
+
+    <!-- Signal -->
+    <div class="rd-section">
+      <div class="rd-title">Signal (LTE M)</div>
+      <div class="rd-row"><span class="rd-key">RSSI</span><span class="rd-item-val">-65 dBm</span></div>
+      <div style="display:flex;align-items:flex-end;gap:3px;margin-top:8px">
+        <div style="width:8px;background:var(--green);border-radius:2px 2px 0 0" id="sb1"></div>
+        <div style="width:8px;background:var(--green);border-radius:2px 2px 0 0" id="sb2"></div>
+        <div style="width:8px;background:var(--green);border-radius:2px 2px 0 0" id="sb3"></div>
+        <div style="width:8px;background:var(--green);border-radius:2px 2px 0 0" id="sb4"></div>
+        <div style="width:8px;background:rgba(176,200,212,0.15);border-radius:2px 2px 0 0" id="sb5"></div>
+      </div>
+      <div class="rd-sub" style="margin-top:4px">Signal quality available</div>
+    </div>
+
+    <!-- System Health -->
+    <div class="rd-section">
+      <div class="rd-title">System Health</div>
+      <div class="rd-row"><span class="rd-key">CPU</span><span class="rd-item-val">12%</span></div>
+      <div class="rd-row"><span class="rd-key">Memory</span><span class="rd-item-val">34%</span></div>
+      <div class="rd-row"><span class="rd-key">Storage</span><span class="rd-item-val">61%</span></div>
+      <div class="rd-row"><span class="rd-key">Uptime</span><span class="rd-item-val" style="color:var(--green)">AVAILABLE</span></div>
+      <div class="rd-row"><span class="rd-key">Temp</span><span class="rd-item-val">38.7°C</span></div>
+    </div>
+
+    <!-- Sensitivity -->
+    <div class="rd-section">
+      <div class="rd-title">Sensitivity</div>
+      <div class="sensitivity-bar">
+        <div style="display:flex;justify-content:space-between;font-size:0.7rem;margin-bottom:3px"><span>PM2.5</span><span style="color:var(--green)">NORMAL</span></div>
+        <div class="sens-track"><div class="sens-fill" style="width:78%;background:var(--green)"></div></div>
+      </div>
+      <div class="sensitivity-bar" style="margin-top:8px">
+        <div style="display:flex;justify-content:space-between;font-size:0.7rem;margin-bottom:3px"><span>Safety</span><span style="color:var(--yellow)">RAISED</span></div>
+        <div class="sens-track"><div class="sens-fill" style="width:55%;background:var(--yellow)"></div></div>
+      </div>
+      <div style="font-size:0.7rem;margin-top:8px;color:rgba(176,200,212,0.4);cursor:pointer;text-decoration:underline">INTERACTIVE BASELINE ↗</div>
+    </div>
+
+    <!-- Pollutant Multi-Axis -->
+    <div class="rd-section">
+      <div class="rd-title" style="display:flex;justify-content:space-between;align-items:center">
+        Pollutant Multi-Axis Analytics
+        <div style="display:flex;gap:4px">
+          <button style="padding:2px 7px;border:1px solid var(--cyan);background:rgba(0,245,255,0.1);color:var(--cyan);font-size:0.55rem;border-radius:2px;cursor:pointer;font-family:'Orbitron',sans-serif">PM2.5</button>
+          <button style="padding:2px 7px;border:1px solid var(--border);background:transparent;color:var(--text);font-size:0.55rem;border-radius:2px;cursor:pointer;">PM10</button>
+          <button style="padding:2px 7px;border:1px solid var(--border);background:transparent;color:var(--text);font-size:0.55rem;border-radius:2px;cursor:pointer;">NO2</button>
+        </div>
+      </div>
+      <div style="height:80px;margin-top:8px"><canvas id="miniChart"></canvas></div>
+    </div>
+
+    <a href="dashboard.html" style="display:block;text-align:center;color:var(--cyan);font-size:0.7rem;text-decoration:none;padding:8px;border:1px solid var(--border);border-radius:4px;font-family:'Orbitron',sans-serif;letter-spacing:1px;">← BACK TO DASHBOARD</a>
+  </div>
+</div>
+
+<!-- BOTTOM BAR -->
+<div class="bottom-bar">
+  <div class="bs-item"><span class="bs-key">Network:</span><span class="bs-val" style="color:var(--green)">LIVE</span></div>
+  <div class="bs-item"><span class="bs-key">Node Status:</span><span class="bs-val">5 ACTIVE</span></div>
+  <div class="bs-item"><span class="bs-key">Last Sync:</span><span class="bs-val">10:28 PM</span></div>
+  <div class="admin-chip">
+    <span style="font-size:0.7rem">ADMIN USER</span>
+    <div class="admin-avatar">AU</div>
+    <span style="font-size:0.6rem;color:rgba(176,200,212,0.35)">SENIOR ADMIN</span>
+  </div>
+</div>
+
+<script>
+const CYAN='#00f5ff', GREEN='#00ff88', YELLOW='#ffc107';
+
+// Signal bars height
+[16,24,32,40,48].forEach((h,i)=>{ const el=document.getElementById('sb'+(i+1)); if(el) el.style.height=h+'px'; });
+
+// PM2.5 Gauge
+function drawGauge(id, val, max, color) {
+  const c = document.getElementById(id);
+  if(!c) return;
+  const ctx = c.getContext('2d');
+  const cx=60, cy=60, r=50;
+  ctx.clearRect(0,0,120,120);
+  // track
+  ctx.beginPath(); ctx.arc(cx,cy,r,0.75*Math.PI, 2.25*Math.PI);
+  ctx.strokeStyle='rgba(0,245,255,0.08)'; ctx.lineWidth=8; ctx.lineCap='round'; ctx.stroke();
+  // fill
+  const pct=Math.min(val/max,1), range=1.5*Math.PI;
+  ctx.beginPath(); ctx.arc(cx,cy,r, 0.75*Math.PI, 0.75*Math.PI + range*pct);
+  ctx.strokeStyle=color; ctx.lineWidth=8; ctx.lineCap='round'; ctx.stroke();
+}
+drawGauge('pm25Gauge', 12.5, 60, GREEN);
+drawGauge('healthGauge', 98, 100, CYAN);
+
+// 7-day chart
+const days=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+const pm25Data=[18,22,25,20,17,23,15];
+const ctx2 = document.getElementById('weekChart').getContext('2d');
+new Chart(ctx2, {
+  type:'bar',
+  data:{ labels:days, datasets:[{ data:pm25Data, backgroundColor:days.map((_,i)=>i===4?GREEN:'rgba(0,245,255,0.25)'), borderColor:days.map((_,i)=>i===4?GREEN:CYAN), borderWidth:1, borderRadius:3 }] },
+  options:{ plugins:{legend:{display:false}}, scales:{ x:{ticks:{color:'rgba(176,200,212,0.4)',font:{size:9}}, grid:{display:false}}, y:{ticks:{color:'rgba(176,200,212,0.4)',font:{size:9}}, grid:{color:'rgba(0,245,255,0.05)'}} } }
+});
+
+// Mini chart
+const ctx3 = document.getElementById('miniChart').getContext('2d');
+new Chart(ctx3, {
+  type:'line',
+  data:{ labels:[...Array(20).keys()], datasets:[{ data:Array.from({length:20},()=>8+Math.random()*18), borderColor:CYAN, borderWidth:1.5, pointRadius:0, fill:true, backgroundColor:'rgba(0,245,255,0.08)', tension:0.4 }] },
+  options:{ plugins:{legend:{display:false}}, scales:{x:{display:false},y:{display:false}}, animation:false }
+});
+</script>
+</body>
+</html>
