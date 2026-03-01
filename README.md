@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # ⬡ AirShield — Micro-Level Pollution Prediction & Alert System
 
 > B.Tech Second Year Project | GLA University, Mathura  
@@ -256,3 +257,4 @@ ML_PORT=5000
 ---
 
 *AirShield — Breathe Smarter 🌍*
+=======

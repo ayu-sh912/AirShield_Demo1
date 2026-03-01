@@ -1,0 +1,3 @@
+backend/.env 
+ml-service/.env 
+backend/node_modules/ 
