@@ -4,7 +4,7 @@
  * Usage: import via <script src="/js/api.js"></script>
  */
 
-const API_BASE = window.location.origin; // Same origin as backend
+const API_BASE = "https://airshield-backend.onrender.com"; // Same origin as backend
 
 const AirShieldAPI = {
 
