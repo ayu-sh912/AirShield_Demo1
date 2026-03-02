@@ -292,12 +292,12 @@ function exportCSV(){
 async function refresh(){
   try{
     // All readings
-    const allRes=await fetch('/api/sensor/all');
+    const allRes=await fetch('https://airshield-backend.onrender.com/api/sensor/all');
     const allJson=await allRes.json();
     allCache=allJson.data||[];
 
     // Latest per node
-    const latRes=await fetch('/api/sensor/latest');
+    const latRes=await fetch('https://airshield-backend.onrender.com/api/sensor/latest');
     const latJson=await latRes.json();
     const nodes=latJson.data||[];
     if(!nodes.length)return;
@@ -368,7 +368,7 @@ async function refresh(){
     document.getElementById('avgPM25').textContent=pm25;
 
     // Alerts
-    const aRes=await fetch('/api/alert/check');
+    const aRes=await fetch('https://airshield-backend.onrender.com/api/alert/check');
     const aJson=await aRes.json();
     const alerts=aJson.alerts||[];
     document.getElementById('alertCount').textContent=alerts.length;
@@ -381,7 +381,7 @@ async function refresh(){
 
     // ML prediction
     try{
-      const mRes=await fetch('/api/predict');
+      const mRes=await fetch('https://airshield-backend.onrender.com/api/predict');
       const mJson=await mRes.json();
       const pred=mJson.prediction;
       if(pred){
