@@ -13,7 +13,7 @@
   * { margin:0; padding:0; box-sizing:border-box; }
   body { background:var(--bg); color:var(--text); font-family:'Rajdhani',sans-serif; display:flex; flex-direction:column; height:100vh; overflow:hidden; }
   .topbar { display:flex; align-items:center; gap:12px; padding:10px 20px; border-bottom:1px solid var(--border); background:rgba(5,10,14,0.95); flex-shrink:0; z-index:1000; position:relative; }
-  .logo { font-family:'Orbitron',sans-serif; font-weight:700; font-size:0.85rem; color:#fff; display:flex; align-items:center; gap:8px; }
+  .logo { font-family:'Orbitron',sans-serif; font-weight:700; font-size:0.85rem; color:#fff; display:flex; align-items:center; gap:8px; text-decoration:none; }
   .logo-box { width:22px; height:22px; background:linear-gradient(135deg,var(--cyan),var(--green)); border-radius:4px; }
   .status-badge { padding:3px 10px; border-radius:3px; font-size:0.65rem; letter-spacing:1px; font-family:'Orbitron',sans-serif; }
   .badge-safe { background:rgba(0,255,136,0.15); border:1px solid rgba(0,255,136,0.4); color:var(--green); }
@@ -21,8 +21,10 @@
   .badge-dan  { background:rgba(255,71,87,0.15);  border:1px solid rgba(255,71,87,0.4);  color:var(--red); }
   .search { flex:1; max-width:340px; margin:0 auto; background:rgba(0,245,255,0.04); border:1px solid var(--border); border-radius:4px; padding:6px 14px; color:var(--text); font-family:'Rajdhani',sans-serif; font-size:0.85rem; outline:none; }
   .topbar-right { display:flex; align-items:center; gap:14px; margin-left:auto; }
-  .icon-btn { background:none; border:none; color:var(--text); cursor:pointer; font-size:1rem; padding:4px; }
-  .avatar { width:28px; height:28px; border-radius:50%; background:linear-gradient(135deg,var(--cyan),var(--green)); display:flex; align-items:center; justify-content:center; font-size:0.7rem; font-weight:700; color:#000; }
+  .icon-btn { background:none; border:none; color:var(--text); cursor:pointer; font-size:1rem; padding:4px; position:relative; transition:color 0.2s; }
+  .icon-btn:hover { color:var(--cyan); }
+  .notif-badge { position:absolute; top:-2px; right:-2px; background:var(--red); color:#fff; font-size:0.5rem; width:14px; height:14px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:'Orbitron',sans-serif; }
+  .avatar { width:28px; height:28px; border-radius:50%; background:linear-gradient(135deg,var(--cyan),var(--green)); display:flex; align-items:center; justify-content:center; font-size:0.7rem; font-weight:700; color:#000; cursor:pointer; }
   .live-dot { width:7px; height:7px; border-radius:50%; background:var(--green); animation:blink 1.5s infinite; display:inline-block; margin-right:5px; }
   @keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
   .main { display:flex; flex:1; overflow:hidden; }
@@ -49,7 +51,7 @@
   .popup-val { color:#fff; font-weight:600; }
   .right-panel { width:320px; border-left:1px solid var(--border); display:flex; flex-direction:column; overflow-y:auto; flex-shrink:0; }
   .metrics-row { display:grid; grid-template-columns:1fr 1fr; gap:1px; border-bottom:1px solid var(--border); }
-  .metric-card { background:var(--panel); padding:14px 16px; position:relative; }
+  .metric-card { background:var(--panel); padding:14px 16px; }
   .metric-card:nth-child(odd) { border-right:1px solid var(--border); }
   .metric-label { font-size:0.6rem; letter-spacing:2px; color:rgba(176,200,212,0.4); text-transform:uppercase; margin-bottom:4px; }
   .metric-val { font-family:'Orbitron',sans-serif; font-size:1.5rem; color:#fff; }
@@ -94,20 +96,112 @@
   .bs-key{color:rgba(176,200,212,0.35);text-transform:uppercase;letter-spacing:1px}
   .bs-val{color:var(--cyan);font-family:'Orbitron',sans-serif;font-size:0.7rem}
   ::-webkit-scrollbar{width:4px} ::-webkit-scrollbar-thumb{background:rgba(0,245,255,0.2);border-radius:2px}
+  /* MODALS */
+  .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.75); z-index:9999; align-items:center; justify-content:center; backdrop-filter:blur(4px); }
+  .modal-overlay.active { display:flex; }
+  .modal { background:var(--panel); border:1px solid var(--border); border-radius:10px; padding:32px; width:420px; max-width:90vw; box-shadow:0 0 40px rgba(0,245,255,0.1); position:relative; }
+  .modal-title { font-family:'Orbitron',sans-serif; font-size:0.9rem; color:#fff; letter-spacing:2px; margin-bottom:24px; }
+  .modal-close { position:absolute; top:16px; right:16px; background:none; border:none; color:var(--text); font-size:1.2rem; cursor:pointer; }
+  .modal-close:hover { color:var(--red); }
+  .form-group { margin-bottom:16px; }
+  .form-label { font-size:0.7rem; letter-spacing:1px; color:rgba(176,200,212,0.5); text-transform:uppercase; margin-bottom:6px; display:block; }
+  .form-input { width:100%; background:rgba(0,245,255,0.04); border:1px solid var(--border); border-radius:4px; padding:10px 14px; color:#fff; font-family:'Rajdhani',sans-serif; font-size:0.9rem; outline:none; transition:border-color 0.2s; }
+  .form-input:focus { border-color:var(--cyan); }
+  .form-btn { width:100%; padding:12px; background:linear-gradient(135deg,var(--cyan),var(--green)); border:none; border-radius:4px; color:#000; font-family:'Orbitron',sans-serif; font-size:0.8rem; letter-spacing:2px; cursor:pointer; margin-top:8px; transition:opacity 0.2s; }
+  .form-btn:hover { opacity:0.85; }
+  .form-error { color:var(--red); font-size:0.75rem; margin-top:8px; display:none; }
+  .form-hint { text-align:center; color:rgba(176,200,212,0.3); font-size:0.72rem; margin-top:14px; }
+  /* SETTINGS */
+  .settings-row { display:flex; justify-content:space-between; align-items:center; padding:12px 0; border-bottom:1px solid var(--border); }
+  .settings-label { font-size:0.85rem; color:var(--text); }
+  .settings-sub { font-size:0.7rem; color:rgba(176,200,212,0.4); margin-top:2px; }
+  .toggle { position:relative; width:40px; height:22px; }
+  .toggle input { opacity:0; width:0; height:0; }
+  .toggle-slider { position:absolute; inset:0; background:rgba(176,200,212,0.2); border-radius:22px; cursor:pointer; transition:0.3s; }
+  .toggle-slider:before { content:''; position:absolute; height:16px; width:16px; left:3px; bottom:3px; background:#fff; border-radius:50%; transition:0.3s; }
+  .toggle input:checked + .toggle-slider { background:var(--cyan); }
+  .toggle input:checked + .toggle-slider:before { transform:translateX(18px); }
+  .select-input { background:rgba(0,245,255,0.04); border:1px solid var(--border); border-radius:4px; padding:6px 10px; color:#fff; font-family:'Rajdhani',sans-serif; font-size:0.85rem; outline:none; cursor:pointer; }
+  /* ALERTS PANEL */
+  .alerts-panel { display:none; position:fixed; top:52px; right:20px; width:340px; background:var(--panel); border:1px solid var(--border); border-radius:8px; z-index:2000; box-shadow:0 8px 32px rgba(0,0,0,0.5); max-height:400px; overflow-y:auto; }
+  .alerts-panel.active { display:block; }
+  .alerts-panel-header { padding:14px 16px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; position:sticky; top:0; background:var(--panel); }
+  .alerts-panel-title { font-family:'Orbitron',sans-serif; font-size:0.75rem; color:#fff; }
+  .alerts-panel-body { padding:12px; }
 </style>
 </head>
 <body>
 
+<!-- LOGIN MODAL -->
+<div class="modal-overlay" id="loginModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('loginModal')">&#x2715;</button>
+    <div class="modal-title">&#x2B21; AIRSHIELD LOGIN</div>
+    <div class="form-group">
+      <label class="form-label">Email</label>
+      <input class="form-input" type="email" id="loginEmail" placeholder="admin@airshield.io">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Password</label>
+      <input class="form-input" type="password" id="loginPassword" placeholder="Enter password" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <div class="form-error" id="loginError">Invalid credentials. Please try again.</div>
+    <button class="form-btn" onclick="doLogin()">ACCESS DASHBOARD</button>
+    <div class="form-hint">Demo: admin@airshield.io / airshield123</div>
+  </div>
+</div>
+
+<!-- SETTINGS MODAL -->
+<div class="modal-overlay" id="settingsModal">
+  <div class="modal" style="width:480px">
+    <button class="modal-close" onclick="closeModal('settingsModal')">&#x2715;</button>
+    <div class="modal-title">&#x2699; SETTINGS</div>
+    <div class="settings-row">
+      <div><div class="settings-label">Auto Refresh</div><div class="settings-sub">Fetch new data automatically</div></div>
+      <label class="toggle"><input type="checkbox" id="autoRefreshToggle" checked onchange="toggleAutoRefresh(this)"><span class="toggle-slider"></span></label>
+    </div>
+    <div class="settings-row">
+      <div><div class="settings-label">Alert Notifications</div><div class="settings-sub">Show badge on new alerts</div></div>
+      <label class="toggle"><input type="checkbox" id="notifToggle" checked><span class="toggle-slider"></span></label>
+    </div>
+    <div class="settings-row">
+      <div><div class="settings-label">Refresh Interval</div><div class="settings-sub">How often to fetch new data</div></div>
+      <select class="select-input" id="refreshInterval" onchange="changeInterval(this.value)">
+        <option value="5000">5 seconds</option>
+        <option value="10000">10 seconds</option>
+        <option value="30000">30 seconds</option>
+        <option value="60000">1 minute</option>
+      </select>
+    </div>
+    <button class="form-btn" style="margin-top:20px" onclick="saveSettings()">SAVE SETTINGS</button>
+  </div>
+</div>
+
+<!-- ALERTS DROPDOWN PANEL -->
+<div class="alerts-panel" id="alertsPanel">
+  <div class="alerts-panel-header">
+    <span class="alerts-panel-title">&#x1F514; ACTIVE ALERTS</span>
+    <button style="background:none;border:none;color:var(--text);cursor:pointer;font-size:1rem;" onclick="document.getElementById('alertsPanel').classList.remove('active')">&#x2715;</button>
+  </div>
+  <div class="alerts-panel-body" id="alertsPanelBody">
+    <div style="font-size:0.75rem;color:rgba(176,200,212,0.4)">Loading alerts...</div>
+  </div>
+</div>
+
+<!-- TOPBAR -->
 <div class="topbar">
-  <div class="logo"><div class="logo-box"></div>AirShield</div>
-  <div class="status-badge badge-safe" id="globalBadge">ALL — SAFE</div>
+  <a href="index.html" class="logo"><div class="logo-box"></div>AirShield</a>
+  <div class="status-badge badge-safe" id="globalBadge">ALL &#8212; SAFE</div>
   <input class="search" placeholder="Search Micro-Sectors, Stations or Detectors..."/>
   <span style="font-size:0.7rem;color:var(--green);font-family:'Orbitron',sans-serif;"><span class="live-dot"></span>LIVE</span>
   <div class="topbar-right">
-    <button class="icon-btn">🔔</button>
-    <button class="icon-btn">⚙</button>
-    <span style="font-size:0.75rem">Dr. Elena Ross</span>
-    <div class="avatar">ER</div>
+    <button class="icon-btn" onclick="toggleAlertsPanel()" title="Alerts">
+      &#x1F514;
+      <span class="notif-badge" id="topbarAlertCount" style="display:none">0</span>
+    </button>
+    <button class="icon-btn" onclick="openModal('settingsModal')" title="Settings">&#9881;</button>
+    <span style="font-size:0.75rem" id="userName">Login</span>
+    <div class="avatar" id="userAvatar" onclick="handleAvatarClick()" title="Login / Logout">?</div>
   </div>
 </div>
 
@@ -120,16 +214,12 @@
     <div class="sidebar-section" style="margin-top:8px">Active Nodes</div>
     <div id="nodeList"></div>
   </div>
-
-  <div class="map-container">
-    <div id="map"></div>
-  </div>
-
+  <div class="map-container"><div id="map"></div></div>
   <div class="right-panel">
     <div class="metrics-row">
       <div class="metric-card">
         <div class="metric-label">PM2.5</div>
-        <div class="metric-val" id="pm25Val">--<span class="metric-unit"> μg/m³</span></div>
+        <div class="metric-val" id="pm25Val">--<span class="metric-unit"> &#956;g/m&#179;</span></div>
         <canvas class="metric-sparkline" id="sp1"></canvas>
       </div>
       <div class="metric-card">
@@ -139,7 +229,7 @@
       </div>
       <div class="metric-card">
         <div class="metric-label">Temperature</div>
-        <div class="metric-val" id="tempVal">--<span class="metric-unit"> °C</span></div>
+        <div class="metric-val" id="tempVal">--<span class="metric-unit"> &#176;C</span></div>
         <canvas class="metric-sparkline" id="sp3"></canvas>
       </div>
       <div class="metric-card">
@@ -148,7 +238,6 @@
         <canvas class="metric-sparkline" id="sp4"></canvas>
       </div>
     </div>
-
     <div class="aqi-section">
       <div class="aqi-ring-wrap">
         <canvas id="aqiCanvas" width="80" height="80" style="width:80px;height:80px"></canvas>
@@ -159,7 +248,6 @@
         <p id="aqiDesc">Fetching live data...</p>
       </div>
     </div>
-
     <div class="chart-section">
       <div class="section-header">
         <span class="section-title">PM2.5 Trend (Live)</span>
@@ -170,7 +258,6 @@
       </div>
       <div class="chart-wrap"><canvas id="trendChart"></canvas></div>
     </div>
-
     <div class="alerts-section">
       <div class="section-header">
         <span class="section-title">Active Alerts <span class="alert-count" id="alertCount">0</span></span>
@@ -186,7 +273,7 @@
       <span class="section-title">Raw Stream: Active Sensors</span>
       <div style="display:flex;gap:6px">
         <button class="ctrl-btn" onclick="exportCSV()">EXPORT CSV</button>
-        <button class="ctrl-btn">FILTER</button>
+        <button class="ctrl-btn" onclick="filterReadings()">FILTER</button>
       </div>
     </div>
     <table class="stream-table">
@@ -195,7 +282,7 @@
     </table>
   </div>
   <div class="ml-section" style="width:340px;flex-shrink:0;">
-    <div class="section-title" style="margin-bottom:8px;">⬡ ML Insights & Reasoning</div>
+    <div class="section-title" style="margin-bottom:8px;">&#x2B21; ML Insights &amp; Reasoning</div>
     <p id="mlText">Fetching ML prediction...</p>
     <div class="avg-row">
       <div><div class="avg-val" id="avgPM25">--</div><div class="avg-lbl">Avg PM2.5</div></div>
@@ -209,48 +296,118 @@
   <span class="bs-key">Last Sync:</span><span class="bs-val" id="lastSync">--</span>
   <span class="bs-key">Nodes:</span><span class="bs-val" id="activeNodes">--</span>
   <span class="bs-key">Readings:</span><span class="bs-val" id="totalReadings">--</span>
-  <a href="index.html" style="margin-left:auto;color:rgba(176,200,212,0.4);font-size:0.7rem;text-decoration:none;">← Home</a>
-  <a href="sensor.html" style="color:var(--cyan);font-size:0.7rem;text-decoration:none;margin-left:16px;">Sensor Detail →</a>
+  <span id="loggedInAs" style="font-size:0.7rem;color:var(--cyan);font-family:'Orbitron',sans-serif;"></span>
+  <a href="index.html" style="margin-left:auto;color:rgba(176,200,212,0.4);font-size:0.7rem;text-decoration:none;">&#8592; Home</a>
+  <a href="sensor.html" style="color:var(--cyan);font-size:0.7rem;text-decoration:none;margin-left:16px;">Sensor Detail &#8594;</a>
 </div>
 
 <script>
+const API='https://airshield-backend.onrender.com';
 const CYAN='#00f5ff',GREEN='#00ff88',YELLOW='#ffc107',RED='#ff4757';
 
-// GLA University, Mathura node coordinates
-const NODE_COORDS={
-  'Node-742X':[27.5706,77.6632],
-  'Node-D71K':[27.5722,77.6648],
-  'Node-339M':[27.5692,77.6618],
-  'Node-205A':[27.5700,77.6655],
-  'Node-BETA':[27.5732,77.6672],
-  'Node-018' :[27.5682,77.6605],
-};
+// AUTH
+const USERS={'admin@airshield.io':{password:'airshield123',name:'Dr. Elena Ross',initials:'ER'}};
+let currentUser=JSON.parse(localStorage.getItem('airshield_user')||'null');
+
+function updateAuthUI(){
+  if(currentUser){
+    document.getElementById('userName').textContent=currentUser.name;
+    document.getElementById('userAvatar').textContent=currentUser.initials;
+    document.getElementById('loggedInAs').textContent='● '+currentUser.name;
+  } else {
+    document.getElementById('userName').textContent='Login';
+    document.getElementById('userAvatar').textContent='?';
+    document.getElementById('loggedInAs').textContent='';
+  }
+}
+
+function handleAvatarClick(){
+  if(currentUser){ if(confirm('Logout from AirShield?')) logout(); }
+  else openModal('loginModal');
+}
+
+function doLogin(){
+  const email=document.getElementById('loginEmail').value.trim();
+  const pass=document.getElementById('loginPassword').value;
+  const errEl=document.getElementById('loginError');
+  const user=USERS[email];
+  if(user && user.password===pass){
+    currentUser={email,name:user.name,initials:user.initials};
+    localStorage.setItem('airshield_user',JSON.stringify(currentUser));
+    closeModal('loginModal');
+    updateAuthUI();
+  } else {
+    errEl.style.display='block';
+  }
+}
+
+function logout(){
+  currentUser=null;
+  localStorage.removeItem('airshield_user');
+  updateAuthUI();
+}
+
+// MODALS
+function openModal(id){ document.getElementById(id).classList.add('active'); }
+function closeModal(id){ document.getElementById(id).classList.remove('active'); document.getElementById('loginError').style.display='none'; }
+document.querySelectorAll('.modal-overlay').forEach(el=>el.addEventListener('click',e=>{ if(e.target===el) closeModal(el.id); }));
+
+// ALERTS PANEL
+function toggleAlertsPanel(){ document.getElementById('alertsPanel').classList.toggle('active'); }
+document.addEventListener('click',e=>{
+  const panel=document.getElementById('alertsPanel');
+  if(!panel.contains(e.target) && !e.target.closest('.icon-btn')) panel.classList.remove('active');
+});
+
+// SETTINGS
+let refreshTimer=null;
+let refreshIntervalMs=5000;
+
+function toggleAutoRefresh(el){
+  if(el.checked) refreshTimer=setInterval(refresh,refreshIntervalMs);
+  else clearInterval(refreshTimer);
+}
+
+function changeInterval(val){
+  refreshIntervalMs=parseInt(val);
+  clearInterval(refreshTimer);
+  if(document.getElementById('autoRefreshToggle').checked) refreshTimer=setInterval(refresh,refreshIntervalMs);
+}
+
+function saveSettings(){
+  closeModal('settingsModal');
+  const toast=document.createElement('div');
+  toast.style.cssText='position:fixed;bottom:60px;right:20px;background:var(--panel);border:1px solid var(--cyan);color:var(--cyan);padding:10px 18px;border-radius:6px;font-size:0.8rem;z-index:9999;font-family:Orbitron,sans-serif;letter-spacing:1px;';
+  toast.textContent='✓ Settings saved!';
+  document.body.appendChild(toast);
+  setTimeout(()=>toast.remove(),2500);
+}
+
+function filterReadings(){
+  const filter=prompt('Filter by Node ID (leave blank for all):');
+  document.querySelectorAll('#streamBody tr').forEach(row=>{
+    if(!row.cells[1]) return;
+    row.style.display=(!filter||row.cells[1].textContent.includes(filter))?'':'none';
+  });
+}
 
 // MAP
+const NODE_COORDS={'Node-742X':[27.5706,77.6632],'Node-D71K':[27.5722,77.6648],'Node-339M':[27.5692,77.6618],'Node-205A':[27.5700,77.6655],'Node-BETA':[27.5732,77.6672],'Node-018':[27.5682,77.6605],'NODE-1':[27.5710,77.6640],'NODE-2':[27.5720,77.6630],'NODE-3':[27.5700,77.6650]};
 const map=L.map('map',{zoomControl:true,attributionControl:false}).setView([27.5706,77.6632],15);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,opacity:0.6}).addTo(map);
-
-function makeIcon(color){
-  return L.divIcon({className:'',
-    html:`<div style="width:14px;height:14px;border-radius:50%;background:${color};box-shadow:0 0 10px ${color},0 0 20px ${color}55;border:2px solid rgba(255,255,255,0.4)"></div>`,
-    iconSize:[14,14],iconAnchor:[7,7]});
-}
+function makeIcon(color){ return L.divIcon({className:'',html:'<div style="width:14px;height:14px;border-radius:50%;background:'+color+';box-shadow:0 0 10px '+color+',0 0 20px '+color+'55;border:2px solid rgba(255,255,255,0.4)"></div>',iconSize:[14,14],iconAnchor:[7,7]}); }
 const mapMarkers={};
 
 // SPARKLINES
 const sparkCharts={};
 function initSpark(id,color){
-  const c=document.getElementById(id);
-  if(!c)return;
-  sparkCharts[id]=new Chart(c.getContext('2d'),{
-    type:'line',data:{labels:[],datasets:[{data:[],borderColor:color,borderWidth:1.5,pointRadius:0,fill:true,backgroundColor:color+'18',tension:0.4}]},
-    options:{plugins:{legend:{display:false}},scales:{x:{display:false},y:{display:false}},animation:{duration:200}}
-  });
+  const c=document.getElementById(id); if(!c)return;
+  sparkCharts[id]=new Chart(c.getContext('2d'),{type:'line',data:{labels:[],datasets:[{data:[],borderColor:color,borderWidth:1.5,pointRadius:0,fill:true,backgroundColor:color+'18',tension:0.4}]},options:{plugins:{legend:{display:false}},scales:{x:{display:false},y:{display:false}},animation:{duration:200}}});
 }
-initSpark('sp1',CYAN); initSpark('sp2',YELLOW); initSpark('sp3',RED); initSpark('sp4',GREEN);
+initSpark('sp1',CYAN);initSpark('sp2',YELLOW);initSpark('sp3',RED);initSpark('sp4',GREEN);
 function pushSpark(id,val){
   const ch=sparkCharts[id]; if(!ch)return;
-  ch.data.labels.push(''); ch.data.datasets[0].data.push(val);
+  ch.data.labels.push('');ch.data.datasets[0].data.push(val);
   if(ch.data.labels.length>20){ch.data.labels.shift();ch.data.datasets[0].data.shift();}
   ch.update();
 }
@@ -266,15 +423,8 @@ function drawAQI(pm25){
 
 // TREND CHART
 const tCtx=document.getElementById('trendChart').getContext('2d');
-const tChart=new Chart(tCtx,{type:'line',
-  data:{labels:[],datasets:[
-    {label:'Actual',data:[],borderColor:CYAN,borderWidth:2,pointRadius:2,fill:true,backgroundColor:'rgba(0,245,255,0.06)',tension:0.4},
-    {label:'Predicted',data:[],borderColor:YELLOW,borderWidth:1.5,borderDash:[6,3],pointRadius:2,fill:false,tension:0.4}
-  ]},
-  options:{plugins:{legend:{display:false}},scales:{x:{ticks:{color:'rgba(176,200,212,0.35)',font:{size:9}},grid:{color:'rgba(0,245,255,0.05)'}},y:{ticks:{color:'rgba(176,200,212,0.35)',font:{size:9}},grid:{color:'rgba(0,245,255,0.05)'}}},animation:{duration:300}}
-});
+const tChart=new Chart(tCtx,{type:'line',data:{labels:[],datasets:[{label:'Actual',data:[],borderColor:CYAN,borderWidth:2,pointRadius:2,fill:true,backgroundColor:'rgba(0,245,255,0.06)',tension:0.4},{label:'Predicted',data:[],borderColor:YELLOW,borderWidth:1.5,borderDash:[6,3],pointRadius:2,fill:false,tension:0.4}]},options:{plugins:{legend:{display:false}},scales:{x:{ticks:{color:'rgba(176,200,212,0.35)',font:{size:9}},grid:{color:'rgba(0,245,255,0.05)'}},y:{ticks:{color:'rgba(176,200,212,0.35)',font:{size:9}},grid:{color:'rgba(0,245,255,0.05)'}}},animation:{duration:300}}});
 
-// CLASSIFY
 function classify(pm25){
   if(pm25<=60)  return{status:'Safe',     cls:'pill-safe',color:GREEN, badge:'badge-safe',label:'GOOD AIR QUALITY',   desc:'Conditions favorable for outdoor activity.'};
   if(pm25<=150) return{status:'Moderate', cls:'pill-mod', color:YELLOW,badge:'badge-mod', label:'MODERATE AIR QUALITY',desc:'Sensitive groups should reduce outdoor activity.'};
@@ -291,35 +441,29 @@ function exportCSV(){
 
 async function refresh(){
   try{
-    // All readings
-    const allRes=await fetch('https://airshield-backend.onrender.com/api/sensor/all');
+    const allRes=await fetch(API+'/api/sensor/all');
     const allJson=await allRes.json();
     allCache=allJson.data||[];
 
-    // Latest per node
-    const latRes=await fetch('https://airshield-backend.onrender.com/api/sensor/latest');
+    const latRes=await fetch(API+'/api/sensor/latest');
     const latJson=await latRes.json();
     const nodes=latJson.data||[];
     if(!nodes.length)return;
 
-    // Averages
     const avg=key=>Math.round(nodes.reduce((s,n)=>s+Number(n[key]),0)/nodes.length*10)/10;
     const pm25=avg('pm25'),gas=avg('gas'),temp=avg('temperature'),hum=avg('humidity');
 
-    // Metrics
-    document.getElementById('pm25Val').innerHTML=`${pm25}<span class="metric-unit"> μg/m³</span>`;
-    document.getElementById('gasVal').innerHTML=`${gas}<span class="metric-unit"> ppm</span>`;
-    document.getElementById('tempVal').innerHTML=`${temp}<span class="metric-unit"> °C</span>`;
-    document.getElementById('humVal').innerHTML=`${hum}<span class="metric-unit"> %</span>`;
+    document.getElementById('pm25Val').innerHTML=pm25+'<span class="metric-unit"> \u03bcg/m\u00b3</span>';
+    document.getElementById('gasVal').innerHTML=gas+'<span class="metric-unit"> ppm</span>';
+    document.getElementById('tempVal').innerHTML=temp+'<span class="metric-unit"> \u00b0C</span>';
+    document.getElementById('humVal').innerHTML=hum+'<span class="metric-unit"> %</span>';
     pushSpark('sp1',pm25);pushSpark('sp2',gas);pushSpark('sp3',temp);pushSpark('sp4',hum);
 
-    // Overall
     const worst=Math.max(...nodes.map(n=>n.pm25));
     const info=classify(worst);
     const badge=document.getElementById('globalBadge');
-    badge.textContent=`ALL — ${info.status.toUpperCase()}`;badge.className=`status-badge ${info.badge}`;
+    badge.textContent='ALL \u2014 '+info.status.toUpperCase();badge.className='status-badge '+info.badge;
 
-    // AQI
     const aqi=Math.min(500,Math.round(pm25*2));
     document.getElementById('aqiNum').textContent=aqi;
     document.getElementById('aqiStatus').textContent=info.label;
@@ -327,78 +471,69 @@ async function refresh(){
     document.getElementById('aqiDesc').textContent=info.desc;
     drawAQI(pm25);
 
-    // Trend chart
     const last=allCache.slice(-20);
     tChart.data.labels=last.map(r=>new Date(r.created_at).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}));
     tChart.data.datasets[0].data=last.map(r=>r.pm25);
     tChart.update();
 
-    // Map markers + node list
     const nl=document.getElementById('nodeList');nl.innerHTML='';
     nodes.forEach(r=>{
       const coords=NODE_COORDS[r.node_id]||[27.5706+Math.random()*0.01,77.6632+Math.random()*0.01];
       const ci=classify(r.pm25);
       if(mapMarkers[r.node_id])mapMarkers[r.node_id].setIcon(makeIcon(ci.color));
       else mapMarkers[r.node_id]=L.marker(coords,{icon:makeIcon(ci.color)}).addTo(map);
-      mapMarkers[r.node_id].bindPopup(`
-        <div class="popup-title">${r.node_id}</div>
-        <div class="popup-row"><span class="popup-key">PM2.5</span><span class="popup-val" style="color:${ci.color}">${r.pm25} μg/m³</span></div>
-        <div class="popup-row"><span class="popup-key">Gas</span><span class="popup-val">${r.gas} ppm</span></div>
-        <div class="popup-row"><span class="popup-key">Temp</span><span class="popup-val">${r.temperature}°C</span></div>
-        <div class="popup-row"><span class="popup-key">Humidity</span><span class="popup-val">${r.humidity}%</span></div>
-        <div class="popup-row"><span class="popup-key">Status</span><span class="popup-val" style="color:${ci.color}">${ci.status}</span></div>
-        <div class="popup-row"><span class="popup-key">Time</span><span class="popup-val">${new Date(r.created_at).toLocaleTimeString()}</span></div>
-      `);
-      nl.innerHTML+=`<div class="node-item" onclick="map.setView([${coords[0]},${coords[1]}],17);mapMarkers['${r.node_id}'].openPopup()">
-        <div class="ni-id">${r.node_id}</div>
-        <div class="ni-status"><span class="ni-dot" style="background:${ci.color}"></span>${ci.status}</div>
-      </div>`;
+      mapMarkers[r.node_id].bindPopup('<div class="popup-title">'+r.node_id+'</div><div class="popup-row"><span class="popup-key">PM2.5</span><span class="popup-val" style="color:'+ci.color+'">'+r.pm25+' \u03bcg/m\u00b3</span></div><div class="popup-row"><span class="popup-key">Gas</span><span class="popup-val">'+r.gas+' ppm</span></div><div class="popup-row"><span class="popup-key">Temp</span><span class="popup-val">'+r.temperature+'\u00b0C</span></div><div class="popup-row"><span class="popup-key">Humidity</span><span class="popup-val">'+r.humidity+'%</span></div><div class="popup-row"><span class="popup-key">Status</span><span class="popup-val" style="color:'+ci.color+'">'+ci.status+'</span></div><div class="popup-row"><span class="popup-key">Time</span><span class="popup-val">'+new Date(r.created_at).toLocaleTimeString()+'</span></div>');
+      nl.innerHTML+='<div class="node-item" onclick="map.setView(['+coords[0]+','+coords[1]+'],17);mapMarkers[\''+r.node_id+'\'].openPopup()"><div class="ni-id">'+r.node_id+'</div><div class="ni-status"><span class="ni-dot" style="background:'+ci.color+'"></span>'+ci.status+'</div></div>';
     });
 
-    // Stream table
     document.getElementById('streamBody').innerHTML=allCache.slice(0,8).map(r=>{
       const ci=classify(r.pm25);
-      return `<tr><td>${new Date(r.created_at).toLocaleTimeString()}</td><td class="td-node">${r.node_id}</td><td>${r.pm25}</td><td>${r.gas}</td><td>${r.temperature}°C</td><td>${r.humidity}%</td><td><span class="status-pill ${ci.cls}">${ci.status}</span></td></tr>`;
+      return '<tr><td>'+new Date(r.created_at).toLocaleTimeString()+'</td><td class="td-node">'+r.node_id+'</td><td>'+r.pm25+'</td><td>'+r.gas+'</td><td>'+r.temperature+'\u00b0C</td><td>'+r.humidity+'%</td><td><span class="status-pill '+ci.cls+'">'+ci.status+'</span></td></tr>';
     }).join('');
 
-    // Bottom bar
     document.getElementById('lastSync').textContent=new Date().toLocaleTimeString();
     document.getElementById('activeNodes').textContent=nodes.length;
     document.getElementById('totalReadings').textContent=allCache.length;
     document.getElementById('avgPM25').textContent=pm25;
 
-    // Alerts
-    const aRes=await fetch('https://airshield-backend.onrender.com/api/alert/check');
+    // ALERTS
+    const aRes=await fetch(API+'/api/alert/check');
     const aJson=await aRes.json();
     const alerts=aJson.alerts||[];
     document.getElementById('alertCount').textContent=alerts.length;
-    document.getElementById('alertsList').innerHTML=alerts.length===0
-      ?'<div style="font-size:0.75rem;color:var(--green);margin-top:8px;">✓ No active alerts</div>'
+    const topBadge=document.getElementById('topbarAlertCount');
+    if(alerts.length>0){topBadge.style.display='flex';topBadge.textContent=alerts.length;}
+    else topBadge.style.display='none';
+
+    const alertHTML=alerts.length===0
+      ?'<div style="font-size:0.75rem;color:var(--green);margin-top:8px;">\u2713 No active alerts</div>'
       :alerts.slice(0,3).map(a=>{
         const cls=a.type==='CRITICAL'?'alert-red':a.type==='WARNING'?'alert-yellow':'alert-cyan';
-        return `<div class="alert-item ${cls}"><div class="alert-title">${a.type==='CRITICAL'?'⚠':a.type==='WARNING'?'⊙':'✦'} ${a.type}</div><div class="alert-body">${a.message}</div></div>`;
+        return '<div class="alert-item '+cls+'"><div class="alert-title">'+(a.type==='CRITICAL'?'\u26a0':a.type==='WARNING'?'\u2299':'\u2726')+' '+a.type+' \u2014 '+a.node_id+'</div><div class="alert-body">'+a.message+'</div></div>';
       }).join('');
+    document.getElementById('alertsList').innerHTML=alertHTML;
+    document.getElementById('alertsPanelBody').innerHTML=alertHTML;
 
-    // ML prediction
+    // ML
     try{
-      const mRes=await fetch('https://airshield-backend.onrender.com/api/predict');
+      const mRes=await fetch(API+'/api/predict');
       const mJson=await mRes.json();
       const pred=mJson.prediction;
       if(pred){
         document.getElementById('predPM25').textContent=pred.predicted_pm25;
-        document.getElementById('mlText').innerHTML=`ML model predicts next PM2.5 at <span class="highlight">${pred.predicted_pm25} μg/m³</span> — Status: <span class="highlight-w">${pred.predicted_status}</span>. Based on ${mJson.based_on_readings||0} readings.`;
-        // Add predicted point to chart
+        document.getElementById('mlText').innerHTML='ML model predicts next PM2.5 at <span class="highlight">'+pred.predicted_pm25+' \u03bcg/m\u00b3</span> \u2014 Status: <span class="highlight-w">'+pred.predicted_status+'</span>. Based on '+(mJson.based_on_readings||0)+' readings.';
         tChart.data.labels.push('Next');
         tChart.data.datasets[1].data=[...Array(tChart.data.labels.length-1).fill(null),pred.predicted_pm25];
         tChart.update();
       }
     }catch(_){}
-
   }catch(err){console.error('Refresh error:',err);}
 }
 
+// INIT
+updateAuthUI();
 refresh();
-setInterval(refresh,5000);
+refreshTimer=setInterval(refresh,refreshIntervalMs);
 </script>
 </body>
 </html>
